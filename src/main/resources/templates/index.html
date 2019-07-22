@@ -1,10 +1,121 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="https://thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
 <head>
-<meta charset="ISO-8859-1">
-<title>Insert title here</title>
+<!-- CSS INCLUDE -->
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+
+<!-- EOF CSS INCLUDE -->
+<style type="text/css">
+.pagination-centered {
+	text-align: center;
+}
+.disabled {
+	pointer-events: none;
+	opacity: 0.5;
+}
+.pointer-disabled {
+	pointer-events: none;
+}
+</style>
+
 </head>
 <body>
-	Hello World!!
+
+	<!-- START PAGE CONTAINER -->
+	<div class="container-fluid">
+		<!-- START PAGE SIDEBAR -->
+		<!-- commented out     <div th:replace="fragments/header :: header">&nbsp;</div> -->
+		<!-- END PAGE SIDEBAR -->
+		<!-- PAGE TITLE -->
+		<div class="page-title">
+			<h2>
+				<span class="fa fa-arrow-circle-o-left"></span> Client Viewer
+			</h2>
+		</div>
+		<!-- END PAGE TITLE -->
+		<div class="row">
+			<table class="table datatable">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Address</th>
+						<th>Load</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="clientlist : ${clientlist}">
+						<td th:text="${clientlist.name}">Text ...</td>
+						<td th:text="${clientlist.address}">Text ...</td>
+						<td><button type="button"
+								class="btn btn-primary btn-condensed">
+								<i class="glyphicon glyphicon-folder-open"></i>
+							</button></td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="row">
+				<div class="form-group col-md-1">
+					<select class="form-control pagination" id="pageSizeSelect">
+						<option th:each="pageSize : ${pageSizes}" th:text="${pageSize}"
+							th:value="${pageSize}"
+							th:selected="${pageSize} == ${selectedPageSize}"></option>
+					</select>
+				</div>
+				<div th:if="${clientlist.totalPages != 1}"
+					class="form-group col-md-11 pagination-centered">
+					<ul class="pagination">
+						<li th:class="${clientlist.number == 0} ? disabled"><a
+							class="pageLink"
+							th:href="@{/(pageSize=${selectedPageSize}, page=1)}">&laquo;</a>
+						</li>
+						<li th:class="${clientlist.number == 0} ? disabled"><a
+							class="pageLink"
+							th:href="@{/(pageSize=${selectedPageSize}, page=${clientlist.number})}">&larr;</a>
+						</li>
+						<li
+							th:class="${clientlist.number == (page - 1)} ? 'active pointer-disabled'"
+							th:each="page : ${#numbers.sequence(pager.startPage, pager.endPage)}">
+							<a class="pageLink"
+							th:href="@{/(pageSize=${selectedPageSize}, page=${page})}"
+							th:text="${page}"></a>
+						</li>
+						<li
+							th:class="${clientlist.number + 1 == clientlist.totalPages} ? disabled">
+							<a class="pageLink"
+							th:href="@{/(pageSize=${selectedPageSize}, page=${clientlist.number + 2})}">&rarr;</a>
+						</li>
+						<li
+							th:class="${clientlist.number + 1 == clientlist.totalPages} ? disabled">
+							<a class="pageLink"
+							th:href="@{/(pageSize=${selectedPageSize}, page=${clientlist.totalPages})}">&raquo;</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<!-- END PAGE CONTENT -->
+		<!-- END PAGE CONTAINER -->
+	</div>
+		<script type="text/javascript"
+  src="https://code.jquery.com/jquery-1.11.1.min.js"></script>
+ 
+
+	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script type="text/javascript" th:inline="javascript">
+		/*<![CDATA[*/
+		$(document).ready(function() {
+	changePageAndSize();
+});
+function changePageAndSize() {
+	$('#pageSizeSelect').change(function(evt) {
+		window.location.replace("/?pageSize=" + this.value + "&page=1");
+	});
+}
+		/*]]>*/
+	</script>
+
 </body>
 </html>
